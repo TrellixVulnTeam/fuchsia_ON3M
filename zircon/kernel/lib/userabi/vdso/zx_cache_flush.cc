@@ -104,6 +104,8 @@ __EXPORT zx_status_t _zx_cache_flush(const void* addr, size_t len, uint32_t opti
     __asm__ volatile("isb sy");
   }
 
+#elif defined(__riscv) && __riscv_xlen == 64
+
 #else
 
 #error what architecture?
