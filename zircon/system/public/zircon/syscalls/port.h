@@ -97,6 +97,8 @@ typedef struct zx_packet_guest_mem {
   // 64-bits (Volume 2, Section 2.2.1.7), and not the 32-bits that will be given here.
   uint8_t default_operand_size;
   uint8_t reserved[7];
+#elif defined(__riscv) && __riscv_xlen == 64
+  uint8_t reserved[24];
 #endif
 } zx_packet_guest_mem_t;
 

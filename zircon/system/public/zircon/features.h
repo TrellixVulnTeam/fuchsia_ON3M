@@ -41,6 +41,8 @@
 #define ZX_ARM64_FEATURE_ISA_TS        ((uint32_t)(1u << 16))
 #define ZX_ARM64_FEATURE_ISA_RNDR      ((uint32_t)(1u << 17))
 
+#elif defined(__riscv) && __riscv_xlen == 64
+
 #else
 
 #error what architecture?

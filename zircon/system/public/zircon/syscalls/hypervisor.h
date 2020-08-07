@@ -52,6 +52,8 @@ typedef struct zx_vcpu_state {
   uint64_t r15;
   // Contains only the user-controllable lower 32-bits.
   uint64_t rflags;
+#elif __riscv && __riscv_xlen == 64
+  uint8_t placeholder;
 #endif
 } zx_vcpu_state_t;
 
