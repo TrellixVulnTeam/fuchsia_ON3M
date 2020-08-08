@@ -20,6 +20,8 @@ namespace elf_search {
 constexpr Elf64_Half kNativeElfMachine = EM_AARCH64;
 #elif defined(__x86_64__)
 constexpr Elf64_Half kNativeElfMachine = EM_X86_64;
+#elif defined(__riscv) && __riscv_xlen == 64
+constexpr Elf64_Half kNativeElfMachine = EM_RISCV;
 #endif
 
 struct ModuleInfo {
