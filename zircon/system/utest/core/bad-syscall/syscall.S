@@ -15,6 +15,8 @@ bad_syscall:
     mov %rdi, %rax
     syscall
     ret
+#elif defined(__riscv) && __riscv_xlen == 64
+    ret
 #else
 #error "Unsupported arch"
 #endif
