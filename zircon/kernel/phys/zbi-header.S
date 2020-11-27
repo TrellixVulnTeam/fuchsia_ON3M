@@ -20,6 +20,8 @@ ZBI_CONTAINER_HEADER(kZbiContainerHeader, PHYS_LOAD_END - kZbiItemHeader)
   .int ZBI_TYPE_KERNEL_ARM64    // type
 #elif defined(__x86_64__)
   .int ZBI_TYPE_KERNEL_X64      // type
+#elif defined(__riscv) && __riscv_xlen == 64
+  .int ZBI_TYPE_KERNEL_RISCV64  // type
 #else
 #error "what machine?"
 #endif
