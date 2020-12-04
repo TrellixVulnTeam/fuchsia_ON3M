@@ -20,6 +20,8 @@ inline constexpr Arch GetCurrentArch() {
   return Arch::kX64;
 #elif defined(__aarch64__)
   return Arch::kArm64;
+#elif defined(__riscv) && __riscv_xlen == 64
+  return Arch::kRiscv64;
 #else
 #error "Unknown arch"
 #endif
