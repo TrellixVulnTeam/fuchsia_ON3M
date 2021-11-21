@@ -99,7 +99,7 @@ uintptr_t page_mask_per_level(uint level) {
 
 // Convert user level mmu flags to flags that go in L1 descriptors.
 pte_t mmu_flags_to_pte_attr(uint flags) {
-  pte_t attr = RISCV64_PTE_V;
+  pte_t attr = RISCV64_PTE_V | RISCV64_PTE_A | RISCV64_PTE_D;
 
   if ((flags & ARCH_MMU_FLAG_CACHED) ||
       (flags & ARCH_MMU_FLAG_WRITE_COMBINING) ||
@@ -1143,12 +1143,12 @@ void Riscv64ArchVmAspace::ContextSwitch(Riscv64ArchVmAspace* old_aspace, Riscv64
 
     // Load the user space TTBR with the translation table and user space ASID.
 
-    satp = ((uint64_t)RISCV64_SATP_MODE_SV48 << RISCV64_SATP_MODE_SHIFT) |
+    satp = ((uint64_t)RISCV64_SATP_MODE_SV39 << RISCV64_SATP_MODE_SHIFT) |
             ((uint64_t)aspace->asid_ << RISCV64_SATP_ASID_SHIFT) |
             (aspace->tt_phys_ >> PAGE_SIZE_SHIFT);
   } else {
     // Switching to the null aspace, which means kernel address space only.
-    satp = ((uint64_t)RISCV64_SATP_MODE_SV48 << RISCV64_SATP_MODE_SHIFT) |
+    satp = ((uint64_t)RISCV64_SATP_MODE_SV39 << RISCV64_SATP_MODE_SHIFT) |
             (riscv64_kernel_translation_table_phys >> PAGE_SIZE_SHIFT);
   }
   if (TRACE_CONTEXT_SWITCH) {
