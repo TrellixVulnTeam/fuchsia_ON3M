@@ -261,6 +261,7 @@ bool ThreadInterrupter::GrabRegisters(zx_handle_t thread, InterruptedThreadState
 #elif defined(__x86_64__)
   state->pc = static_cast<uintptr_t>(regs.rip);
   state->fp = static_cast<uintptr_t>(regs.rbp);
+#elif defined(__riscv) && __riscv_xlen == 64
 #else
 #error "Unsupported Architecture"
 #endif
