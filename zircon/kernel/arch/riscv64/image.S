@@ -61,7 +61,11 @@ END_DATA(_zbi_kernel_payload)
 // TODO(revest): Use IMAGE_LOAD_START when LLVM supports it
 // This constant was found in the boot-shim logs with the formula:
 //   "Kernel to 0000000089180000" - "Kernel at 0000000088200000"
+// This is the offset for how much the kernel was copied out of the zbi
+// For the Sifive Unleashed
 #define FIXUP_LOCATION(addr) (addr - KERNEL_BASE + 0x18c0000)
+// For QEMU virt
+//#define FIXUP_LOCATION(addr) (addr - KERNEL_BASE + 0x1a00000)
 
 // This code must be purely position-independent and have no relocs.
 // This is called with the physical address of __code_start in a0 and the

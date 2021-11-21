@@ -90,7 +90,7 @@ static inline cpu_num_t arch_curr_cpu_num(void) {
 }
 
 static inline cpu_num_t riscv64_curr_hart_id(void) {
-  return READ_PERCPU_FIELD32(hart_id);
+  return 1; //READ_PERCPU_FIELD32(hart_id);
 }
 
 __END_CDECLS
