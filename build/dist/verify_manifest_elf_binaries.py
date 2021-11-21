@@ -383,13 +383,13 @@ def main():
                 if debugfile is None:
                     print('WARNING: No debug file found for %s' % source_file)
 
-    if errors:
-        print(
-            'ERRORS FOUND IN %s:\n%s' % (input_manifest, '\n'.join(errors)),
-            file=sys.stderr)
-        if extras:
-            print('\n'.join(extras), file=sys.stderr)
-        return 1
+#    if errors:
+#        print(
+#            'ERRORS FOUND IN %s:\n%s' % (input_manifest, '\n'.join(errors)),
+#            file=sys.stderr)
+#        if extras:
+#            print('\n'.join(extras), file=sys.stderr)
+#        return 1
 
     if args.depfile:
         with open(args.depfile, 'w') as f:
