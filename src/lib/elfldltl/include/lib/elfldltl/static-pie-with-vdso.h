@@ -42,10 +42,11 @@ inline SymbolInfo<typename Self::Elf> LinkStaticPieWithVdso(  //
     const Self& self, DiagnosticsType& diagnostics, const void* vdso_base);
 
 // This version takes vDSO details already distilled separately.
-template <class Self, class DiagnosticsType>
+template <class Self, class DiagnosticsType, typename... DynamicObservers>
 inline SymbolInfo<typename Self::Elf> LinkStaticPieWithVdso(
     const Self& self, DiagnosticsType& diagnostics,
-    const SymbolInfo<typename Self::Elf>& vdso_symbols, typename Self::Elf::size_type vdso_bias) {
+    const SymbolInfo<typename Self::Elf>& vdso_symbols, typename Self::Elf::size_type vdso_bias,
+    DynamicObservers&&... dynamic_observers) {
   using namespace std::literals;
   using Elf = typename Self::Elf;
   using size_type = typename Elf::size_type;
@@ -59,7 +60,8 @@ inline SymbolInfo<typename Self::Elf> LinkStaticPieWithVdso(
   SymbolInfo<Elf> symbol_info;
   DecodeDynamic(diagnostics, memory, Self::Dynamic(),       //
                 DynamicRelocationInfoObserver(reloc_info),  //
-                DynamicSymbolInfoObserver(symbol_info));
+                DynamicSymbolInfoObserver(symbol_info),
+                std::forward<DynamicObservers>(dynamic_observers)...);
 
   // Apply simple fixups first, just in case anything else needs them done.
   if (RelocateRelative(memory, reloc_info, bias)) {
@@ -113,9 +115,9 @@ inline SymbolInfo<typename Self::Elf> LinkStaticPieWithVdso(
 }
 
 // This distills the vDSO symbols and load bias from the image in memory.
-template <class Elf, class DiagnosticsType>
-inline std::pair<SymbolInfo<Elf>, uintptr_t> GetVdsoSymbols(DiagnosticsType& diagnostics,
-                                                            const void* vdso_base) {
+template <class Elf, class DiagnosticsType, typename... DynamicObservers>
+inline std::pair<SymbolInfo<Elf>, uintptr_t> GetVdsoSymbols(
+    DiagnosticsType& diagnostics, const void* vdso_base, DynamicObservers&&... dynamic_observers) {
   using Ehdr = typename Elf::Ehdr;
   using Phdr = typename Elf::Phdr;
   using Dyn = typename Elf::Dyn;
@@ -141,7 +143,8 @@ inline std::pair<SymbolInfo<Elf>, uintptr_t> GetVdsoSymbols(DiagnosticsType& dia
         diagnostics.FormatError("cannot read vDSO PT_DYNAMIC"sv);
         __builtin_trap();
       }
-      DecodeDynamic(diagnostics, vdso_image, *dyn, DynamicSymbolInfoObserver(vdso_symbols));
+      DecodeDynamic(diagnostics, vdso_image, *dyn, DynamicSymbolInfoObserver(vdso_symbols),
+                    std::forward<DynamicObservers>(dynamic_observers)...);
     } else if (ph.type == ElfPhdrType::kLoad && vdso_image_vaddr == kNoAddr) {
       vdso_image_vaddr = ph.vaddr;
     }
@@ -156,16 +159,18 @@ inline std::pair<SymbolInfo<Elf>, uintptr_t> GetVdsoSymbols(DiagnosticsType& dia
 }
 
 // This just combines the two functions above.
-template <class Self, class DiagnosticsType>
+template <class Self, class DiagnosticsType, typename... DynamicObservers>
 inline SymbolInfo<typename Self::Elf> LinkStaticPieWithVdso(  //
-    const Self& self, DiagnosticsType& diagnostics, const void* vdso_base) {
+    const Self& self, DiagnosticsType& diagnostics, const void* vdso_base,
+    DynamicObservers&&... dynamic_observers) {
   using Elf = typename Self::Elf;
 
   // Fetch the vDSO symbol table.
   auto [vdso_symbols, vdso_bias] = GetVdsoSymbols<Elf>(diagnostics, vdso_base);
 
   // The main work is done in the overload defined above.
-  return LinkStaticPieWithVdso(self, diagnostics, vdso_symbols, vdso_bias);
+  return LinkStaticPieWithVdso(self, diagnostics, vdso_symbols, vdso_bias,
+                               std::forward<DynamicObservers>(dynamic_observers)...);
 }
 
 }  // namespace elfldltl
