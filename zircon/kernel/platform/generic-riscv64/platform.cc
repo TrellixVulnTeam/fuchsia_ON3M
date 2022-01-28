@@ -474,10 +474,7 @@ void ProcessZbiLate(const zbi_header_t* zbi) {
             processor_node.parent_index = static_cast<uint16_t>(cluster_index);
             processor_node.entity.processor.logical_id_count = 1;
             processor_node.entity.processor.logical_ids[0] = logical_id;
-	    if (logical_id == 0)
-              processor_node.entity.processor.flags = ZBI_TOPOLOGY_PROCESSOR_PRIMARY;
             processor_node.entity.processor.architecture = ZBI_TOPOLOGY_ARCH_RISCV;
-            processor_node.entity.processor.architecture_info.riscv.hart_id = logical_id;
           }
         }
         DEBUG_ASSERT(flat_index == node_count);
